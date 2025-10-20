@@ -44,8 +44,7 @@ def create():
             return render_template('create.html')
 
         conn = get_db_connection()
-        conn.execute("INSERT INTO persona (nombre, telefono, fecha_nac) VALUES (?, ?, ?)",
-                    (nombre, telefono, fecha_nac))
+        conn.execute("INSERT INTO persona (nombre, telefono, fecha_nac) VALUES (?, ?, ?)", (nombre, telefono, fecha_nac))
         conn.commit()
         conn.close()
         flash('Persona registrada correctamente', 'success')
@@ -67,7 +66,7 @@ def edit(id):
         fecha_nac = request.form['fecha_nac'].strip()
 
         conn.execute("UPDATE persona SET nombre=?, telefono=?, fecha_nac=? WHERE id=?",
-                     (nombre, telefono, fecha_nac, id))
+                    (nombre, telefono, fecha_nac, id))
         conn.commit()
         conn.close()
         flash('Registro actualizado correctamente', 'success')
@@ -81,19 +80,8 @@ def delete(id):
     conn = get_db_connection()
     conn.execute("DELETE FROM persona WHERE id = ?", (id,))
     conn.commit()
-
-    # Reordenar IDs después de eliminar
-    personas = conn.execute("SELECT * FROM persona ORDER BY id ASC").fetchall()
-    conn.execute("DELETE FROM sqlite_sequence WHERE name='persona'")  # reinicia el contador AUTOINCREMENT
-
-    nuevo_id = 1
-    for p in personas:
-        conn.execute("UPDATE persona SET id = ? WHERE rowid = ?", (nuevo_id, p['id']))
-        nuevo_id += 1
-
-    conn.commit()
     conn.close()
-    flash('Persona eliminada y IDs reordenados', 'warning')
+    flash('Persona eliminada correctamente', 'warning')
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
